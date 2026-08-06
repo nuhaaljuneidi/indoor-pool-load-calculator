@@ -244,10 +244,11 @@
         .header-left .cred {
             margin-top: 5px;
             font-family: var(--sans);
-            font-size: .72rem;
+            font-size: .82rem;
             line-height: 1.35;
             color: #b8d8df;
         }
+        .header-left .cred .author { color: #fff; font-weight: 600; }
         .header-input {
             width: 210px;
             padding: 9px 12px;
@@ -394,7 +395,7 @@
             display: none; align-items: center; gap: 7px;
             padding: 8px 10px; border: 1px solid rgba(255,255,255,.16);
             border-radius: 9px; color: #d9edf1;
-            font-size: .7rem; white-space: nowrap;
+            font-size: .82rem; font-weight: 600; white-space: nowrap;
         }
         .participant-badge.visible { display: flex; }
         .participant-badge span { max-width: 130px; overflow: hidden; text-overflow: ellipsis; }
@@ -419,7 +420,7 @@
 <div class="header">
     <div class="header-left">
         <h1>Indoor Pool Surface Load Calculator</h1>
-        <p class="cred">Dr. Nuha Aljuneidi · Dept. of Civil &amp; Architectural Engineering · Lawrence Technological University · ASHRAE-style Natatorium Estimate</p>
+        <p class="cred"><span class="author">Developed by Dr. Nuha Aljuneidi</span> · ASHRAE-style Natatorium Estimate</p>
     </div>
     <div class="header-controls">
         <div class="participant-badge" id="participant-badge" title="Current participant">● <span id="participant-name"></span></div>
@@ -1044,7 +1045,7 @@
     doc.setFont('helvetica', 'bold'); doc.setFontSize(16); doc.setTextColor(3, 56, 100);
     doc.text('Indoor Pool Surface Load Report', L, y); y += 7;
     doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(100, 116, 139);
-    doc.text(`Dr. Nuha Aljuneidi · Dept. of Civil & Architectural Engineering · Lawrence Technological University`, L, y); y += 5;
+    doc.text(`Developed by Dr. Nuha Aljuneidi`, L, y); y += 5;
     doc.text(`Generated: ${new Date().toLocaleDateString()}   |   Project: ${proj}`, L, y); y += 12;
 
     sectionTitle('Input Parameters');
