@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="en"><head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-M3V744VBMY"></script>
     <script>
@@ -6,4 +8,1102 @@
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'G-M3V744VBMY');
-    </script>    <meta charset="UTF-8">    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>Indoor Pool Surface Load Calculator</title>    <link rel="preconnect" href="https://fonts.googleapis.com">    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>    <style>        :root {            --water: #0ea5e9;            --water-deep: #0369a1;            --water-light: #e0f2fe;            --teal: #14b8a6;            --bg: #f0f9ff;            --surface: #ffffff;            --border: #bae6fd;            --text: #0c4a6e;            --text-muted: #64748b;            --accent: #f97316;            --danger: #ef4444;            --warn: #f59e0b;            --mono: 'DM Mono', monospace;            --sans: 'Syne', sans-serif;        }        * { box-sizing: border-box; margin: 0; padding: 0; }        body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; }        /* HEADER */        .header {            background: var(--water-deep);            padding: 16px 32px;            display: flex;            align-items: center;            justify-content: space-between;            border-bottom: 3px solid var(--water);        }        .header-left h1 { font-size: 1.25rem; font-weight: 800; color: #fff; letter-spacing: -0.02em; text-transform: uppercase; }        .header-left .cred { font-family: var(--mono); font-size: 0.68rem; color: #7dd3fc; margin-top: 2px; }        .header-controls { display: flex; gap: 12px; align-items: center; }        .header-input {            font-family: var(--mono); font-size: 0.78rem;            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);            color: #fff; border-radius: 6px; padding: 7px 12px; outline: none; width: 180px;        }        .header-input::placeholder { color: rgba(255,255,255,0.4); }        .header-input:focus { border-color: var(--teal); }        .unit-toggle { display: flex; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; overflow: hidden; }        .unit-btn { font-family: var(--mono); font-size: 0.75rem; padding: 7px 16px; background: none; border: none; color: rgba(255,255,255,0.6); cursor: pointer; transition: all 0.2s; }        .unit-btn.active { background: var(--teal); color: #fff; }        /* VISUALIZER — SVG-based natatorium cross-section */        .visualizer {            height: 220px;            background: linear-gradient(180deg, #dbeafe 0%, #bfdbfe 60%, #93c5fd 100%);            overflow: hidden;            border-bottom: 2px solid var(--border);            position: relative;        }
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indoor Pool Surface Load Calculator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root {
+            --water: #0ea5e9;
+            --water-deep: #0369a1;
+            --water-light: #e0f2fe;
+            --teal: #14b8a6;
+            --bg: #f0f9ff;
+            --surface: #ffffff;
+            --border: #bae6fd;
+            --text: #0c4a6e;
+            --text-muted: #64748b;
+            --accent: #f97316;
+            --danger: #ef4444;
+            --warn: #f59e0b;
+            --mono: 'DM Mono', monospace;
+            --sans: 'Syne', sans-serif;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; }
+
+        /* HEADER */
+        .header {
+            background: var(--water-deep);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 3px solid var(--water);
+        }
+        .header-left h1 { font-size: 1.25rem; font-weight: 800; color: #fff; letter-spacing: -0.02em; text-transform: uppercase; }
+        .header-left .cred { font-family: var(--mono); font-size: 0.68rem; color: #7dd3fc; margin-top: 2px; }
+        .header-controls { display: flex; gap: 12px; align-items: center; }
+        .header-input {
+            font-family: var(--mono); font-size: 0.78rem;
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+            color: #fff; border-radius: 6px; padding: 7px 12px; outline: none; width: 180px;
+        }
+        .header-input::placeholder { color: rgba(255,255,255,0.4); }
+        .header-input:focus { border-color: var(--teal); }
+        .unit-toggle { display: flex; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; overflow: hidden; }
+        .unit-btn { font-family: var(--mono); font-size: 0.75rem; padding: 7px 16px; background: none; border: none; color: rgba(255,255,255,0.6); cursor: pointer; transition: all 0.2s; }
+        .unit-btn.active { background: var(--teal); color: #fff; }
+
+        /* VISUALIZER — SVG-based natatorium cross-section */
+        .visualizer {
+            height: 220px;
+            background: linear-gradient(180deg, #dbeafe 0%, #bfdbfe 60%, #93c5fd 100%);
+            overflow: hidden;
+            border-bottom: 2px solid var(--border);
+            position: relative;
+        }
+        .visualizer svg { width: 100%; height: 100%; }
+
+        /* Wave animation */
+        @keyframes wave1 { 0%,100%{d:path("M0,8 C200,0 400,16 600,8 C800,0 1000,16 1200,8 L1200,20 L0,20 Z")} 50%{d:path("M0,12 C200,20 400,4 600,12 C800,20 1000,4 1200,12 L1200,20 L0,20 Z")} }
+        @keyframes steam-rise { 0%{opacity:0.6;transform:translateY(0) scale(1)} 100%{opacity:0;transform:translateY(-60px) scale(1.8)} }
+        @keyframes float-swimmer { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)} }
+        @keyframes ripple-out { 0%{r:8;opacity:0.8} 100%{r:28;opacity:0} }
+
+        .steam-puff { animation: steam-rise 2.5s ease-out infinite; }
+        .steam-puff:nth-child(2) { animation-delay: 0.8s; }
+        .steam-puff:nth-child(3) { animation-delay: 1.6s; }
+        .swimmer-body { animation: float-swimmer 2s ease-in-out infinite; }
+        .ripple-ring { animation: ripple-out 1.8s ease-out infinite; }
+        .ripple-ring:nth-child(2) { animation-delay: 0.6s; }
+        .ripple-ring:nth-child(3) { animation-delay: 1.2s; }
+
+        /* LAYOUT */
+        .main-layout { display: grid; grid-template-columns: 340px 1fr; min-height: calc(100vh - 222px); }
+
+        /* SIDEBAR */
+        .sidebar { background: var(--surface); border-right: 2px solid var(--border); padding: 20px; overflow-y: auto; }
+        .input-section { margin-bottom: 22px; }
+        .section-label {
+            font-size: 0.63rem; font-weight: 700; letter-spacing: 0.12em;
+            text-transform: uppercase; color: var(--water-deep);
+            margin-bottom: 12px; padding-bottom: 6px;
+            border-bottom: 2px solid var(--water-light);
+        }
+        .field { margin-bottom: 13px; }
+        .field label { font-family: var(--mono); font-size: 0.7rem; color: var(--text-muted); display: flex; align-items: center; gap: 5px; margin-bottom: 5px; }
+        .unit-badge { background: var(--water-light); color: var(--water-deep); padding: 1px 5px; border-radius: 3px; font-size: 0.63rem; }
+        .field input[type="number"] {
+            width: 100%; font-family: var(--mono); font-size: 0.85rem;
+            padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 8px;
+            background: var(--bg); color: var(--text); outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .field input[type="number"]:focus { border-color: var(--water); box-shadow: 0 0 0 3px rgba(14,165,233,0.12); }
+
+        .slider-field { display: flex; align-items: center; gap: 10px; }
+        .slider-field input[type="range"] { flex: 1; accent-color: var(--water); height: 4px; }
+        .slider-val { font-family: var(--mono); font-size: 0.8rem; color: var(--text); min-width: 40px; text-align: right; }
+
+        /* Toggle switch */
+        .toggle-row {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 12px; background: var(--water-light); border-radius: 8px; margin-bottom: 14px;
+        }
+        .toggle-row label { font-family: var(--mono); font-size: 0.72rem; color: var(--text); flex: 1; cursor: pointer; }
+
+        .toggle-switch { position: relative; display: inline-block; width: 38px; height: 22px; flex-shrink: 0; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+        .toggle-track {
+            position: absolute; inset: 0; background: #cbd5e1; border-radius: 22px;
+            cursor: pointer; transition: background 0.2s;
+        }
+        .toggle-track::after {
+            content: ''; position: absolute; left: 3px; top: 3px;
+            width: 16px; height: 16px; background: #fff; border-radius: 50%;
+            transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        .toggle-switch input:checked ~ .toggle-track { background: var(--teal); }
+        .toggle-switch input:checked ~ .toggle-track::after { transform: translateX(16px); }
+
+        /* OA section header with toggle */
+        .oa-section-header {
+            display: flex; align-items: center; justify-content: space-between;
+            font-size: 0.63rem; font-weight: 700; letter-spacing: 0.12em;
+            text-transform: uppercase; color: var(--water-deep);
+            margin-bottom: 12px; padding-bottom: 6px;
+            border-bottom: 2px solid var(--water-light);
+        }
+        .oa-fields { transition: opacity 0.3s; }
+        .oa-fields.disabled { opacity: 0.35; pointer-events: none; }
+
+        /* RESULTS */
+        .results-panel { background: #f8fafc; padding: 22px 26px; overflow-y: auto; }
+
+        .main-result { display: flex; gap: 14px; margin-bottom: 20px; }
+        .result-card-primary {
+            flex: 1.2; background: var(--water-deep); border-radius: 14px;
+            padding: 22px 24px; color: #fff; position: relative; overflow: hidden;
+            transition: background 0.4s;
+        }
+        .result-card-primary.warn { background: var(--warn); }
+        .result-card-primary.danger { background: var(--danger); }
+        .result-card-primary::before {
+            content: ''; position: absolute; right: -24px; top: -24px;
+            width: 100px; height: 100px; border-radius: 50%; background: rgba(255,255,255,0.07);
+        }
+        .result-label { font-family: var(--mono); font-size: 0.65rem; opacity: 0.75; text-transform: uppercase; letter-spacing: 0.1em; }
+        .result-value { font-size: 2.8rem; font-weight: 800; line-height: 1; margin: 5px 0 2px; letter-spacing: -0.03em; }
+        .result-unit { font-family: var(--mono); font-size: 0.85rem; opacity: 0.7; }
+        .result-sub { font-family: var(--mono); font-size: 0.65rem; opacity: 0.55; margin-top: 4px; }
+
+        .side-cards { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+        .mini-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; padding: 14px; flex: 1; }
+        .mini-card-label { font-family: var(--mono); font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 5px; }
+        .mini-card-val { font-size: 1.5rem; font-weight: 800; color: var(--water-deep); line-height: 1; }
+        .mini-card-unit { font-family: var(--mono); font-size: 0.65rem; color: var(--text-muted); margin-top: 2px; }
+
+        .status-badge { display: inline-flex; align-items: center; gap: 5px; font-family: var(--mono); font-size: 0.65rem; padding: 4px 10px; border-radius: 20px; background: #dcfce7; color: #16a34a; }
+        .status-badge.warn { background: #fef9c3; color: #ca8a04; }
+        .status-badge.danger { background: #fee2e2; color: #dc2626; }
+
+        /* Breakdown tables */
+        .breakdown-section { background: var(--surface); border-radius: 12px; border: 1.5px solid var(--border); overflow: hidden; margin-bottom: 14px; }
+        .breakdown-header { padding: 9px 16px; background: var(--water-light); font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--water-deep); }
+        .breakdown-row { display: flex; align-items: center; padding: 10px 16px; border-top: 1px solid var(--border); gap: 10px; }
+        .breakdown-row:first-of-type { border-top: none; }
+        .bicon { width: 26px; height: 26px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; flex-shrink: 0; }
+        .bname { font-family: var(--mono); font-size: 0.7rem; color: var(--text-muted); flex: 1; }
+        .bval { font-family: var(--mono); font-size: 0.8rem; font-weight: 500; color: var(--text); text-align: right; }
+        .bbar { height: 3px; background: var(--water-light); border-radius: 2px; margin-top: 3px; }
+        .bbar-fill { height: 100%; border-radius: 2px; background: var(--water); transition: width 0.5s ease; }
+        .breakdown-row.total { background: #f0f9ff; }
+        .breakdown-row.total .bname, .breakdown-row.total .bval { font-weight: 700; color: var(--water-deep); }
+        .breakdown-row.grand { background: #fff7ed; }
+        .breakdown-row.grand .bname, .breakdown-row.grand .bval { font-weight: 700; color: var(--accent); }
+
+        /* Actions */
+        .actions { display: flex; gap: 12px; margin-top: 14px; }
+        .btn { flex: 1; font-family: var(--mono); font-size: 0.78rem; font-weight: 500; padding: 11px 18px; border-radius: 10px; border: none; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-primary { background: var(--water-deep); color: #fff; }
+        .btn-primary:hover { background: #075985; transform: translateY(-1px); }
+        .btn-secondary { background: var(--surface); color: var(--text); border: 1.5px solid var(--border); }
+        .btn-secondary:hover { background: var(--water-light); }
+
+        /* Equations */
+        .equations-section { background: #1e293b; border-radius: 12px; padding: 18px; margin-top: 14px; display: none; }
+        .equations-section.open { display: block; }
+        .eq-title { font-family: var(--mono); font-size: 0.65rem; color: var(--teal); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.08em; }
+        .eq-line { font-family: var(--mono); font-size: 0.7rem; color: #94a3b8; line-height: 1.9; }
+        .eq-line .kw { color: #7dd3fc; } .eq-line .fn { color: #f0abfc; } .eq-line .num { color: #fda4af; }
+
+        @media (max-width: 800px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .header { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .main-result { flex-direction: column; }
+            .actions { flex-direction: column; }
+            .header-controls { width: 100%; flex-wrap: wrap; }
+            .header-input { flex: 1; min-width: 180px; }
+        }
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button { opacity: 0.5; }
+
+        /* 2026 visual refresh — clean SBED engineering workspace */
+        :root {
+            --water: #0f8fa8;
+            --water-deep: #123b4a;
+            --water-light: #e8f5f7;
+            --teal: #17a398;
+            --bg: #f4f7f8;
+            --surface: #ffffff;
+            --border: #d9e4e7;
+            --text: #16313b;
+            --text-muted: #667b84;
+            --accent: #e07a3f;
+            --danger: #c94b4b;
+            --warn: #d38a2d;
+            --mono: 'JetBrains Mono', monospace;
+            --sans: 'Inter', sans-serif;
+        }
+
+        body {
+            background:
+                radial-gradient(circle at 100% 0%, rgba(15,143,168,.08), transparent 32rem),
+                var(--bg);
+            letter-spacing: -0.01em;
+        }
+
+        .header {
+            padding: 18px clamp(18px, 4vw, 48px);
+            background: rgba(18,59,74,.98);
+            border-bottom: 1px solid rgba(255,255,255,.12);
+            box-shadow: 0 8px 30px rgba(18,59,74,.14);
+        }
+        .header-left h1 {
+            font-size: clamp(1.05rem, 2vw, 1.35rem);
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            text-transform: none;
+        }
+        .header-left .cred {
+            margin-top: 5px;
+            font-family: var(--sans);
+            font-size: .82rem;
+            line-height: 1.35;
+            color: #b8d8df;
+        }
+        .header-left .cred .author { color: #fff; font-weight: 600; }
+        .header-input {
+            width: 210px;
+            padding: 9px 12px;
+            border-radius: 9px;
+            font-family: var(--sans);
+            background: rgba(255,255,255,.08);
+        }
+        .unit-toggle { border-radius: 9px; }
+        .unit-btn { padding: 9px 16px; font-family: var(--sans); font-weight: 600; }
+
+        .visualizer {
+            height: 132px;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(180deg, #e6f2f4 0%, #cae4e9 100%);
+        }
+        .visualizer svg { height: 132px; }
+
+        .main-layout {
+            grid-template-columns: minmax(290px, 340px) minmax(0, 1fr);
+            min-height: calc(100vh - 207px);
+            max-width: 1440px;
+            margin: 0 auto;
+            background: var(--surface);
+            box-shadow: 0 12px 44px rgba(22,49,59,.08);
+        }
+        .sidebar {
+            padding: 24px;
+            border-right: 1px solid var(--border);
+            background: #fbfcfc;
+        }
+        .input-section { margin-bottom: 26px; }
+        .section-label, .oa-section-header {
+            font-size: .69rem;
+            letter-spacing: .09em;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 9px;
+            margin-bottom: 15px;
+        }
+        .field { margin-bottom: 16px; }
+        .field label {
+            font-family: var(--sans);
+            font-size: .77rem;
+            font-weight: 600;
+        }
+        .field input[type="number"] {
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            background: #fff;
+            font-size: .82rem;
+        }
+        .unit-badge { border-radius: 5px; padding: 2px 6px; }
+        .toggle-row { border: 1px solid #d4eaed; background: #f0f8f9; }
+        .toggle-copy { flex: 1; min-width: 0; }
+        .toggle-copy strong { display: block; font-size: .78rem; font-weight: 600; }
+        .toggle-copy small { display: block; margin-top: 2px; color: var(--text-muted); font-size: .66rem; line-height: 1.3; }
+        .toggle-control { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .toggle-state { min-width: 60px; font-family: var(--mono); font-size: .65rem; color: var(--text-muted); text-align: right; }
+        .toggle-state.on { color: var(--teal); font-weight: 600; }
+
+        .results-panel { padding: 26px clamp(20px, 3vw, 38px); background: var(--bg); }
+        .result-card-primary {
+            padding: 23px 25px;
+            border-radius: 14px;
+            background: linear-gradient(145deg, #123b4a 0%, #17677a 100%);
+            box-shadow: 0 10px 26px rgba(18,59,74,.16);
+        }
+        .result-value { font-size: clamp(2.2rem, 5vw, 3.15rem); }
+        .mini-card, .breakdown-section {
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 16px rgba(22,49,59,.045);
+        }
+        .mini-card { padding: 15px 17px; }
+        .mini-card-val { color: var(--water-deep); }
+        .breakdown-header { padding: 11px 16px; background: #edf6f7; }
+        .breakdown-row { padding: 12px 16px; border-top-color: #e7eef0; }
+        .bname { font-family: var(--sans); font-size: .76rem; }
+        .bval { font-size: .75rem; }
+        .bicon { background: #edf6f7 !important; }
+        .btn { font-family: var(--sans); font-weight: 600; padding: 12px 18px; }
+        .btn-primary { background: var(--water-deep); }
+        .btn-primary:hover { background: #19566a; }
+        .equations-section { background: #162d36; }
+
+        @media (max-width: 900px) {
+            .header { align-items: flex-start; }
+            .main-layout { grid-template-columns: 300px minmax(0,1fr); }
+            .main-result { flex-direction: column; }
+        }
+        @media (max-width: 720px) {
+            .header { flex-direction: column; gap: 14px; }
+            .header-controls { width: 100%; }
+            .header-input { flex: 1; width: auto; }
+            .visualizer, .visualizer svg { height: 104px; }
+            .main-layout { grid-template-columns: 1fr; }
+            .sidebar { position: static; border-right: 0; border-bottom: 1px solid var(--border); }
+            .results-panel { padding: 20px 16px 28px; }
+            .actions { flex-direction: column; }
+        }
+
+        /* Participant name gate + activity logging */
+        .name-gate {
+            position: fixed; inset: 0; z-index: 9999;
+            display: flex; align-items: center; justify-content: center;
+            padding: 22px;
+            background: rgba(10, 35, 44, .76);
+            backdrop-filter: blur(9px);
+        }
+        .name-gate-card {
+            width: min(440px, 100%);
+            padding: 30px;
+            border: 1px solid rgba(255,255,255,.3);
+            border-radius: 18px;
+            background: #fff;
+            box-shadow: 0 24px 70px rgba(7, 27, 34, .32);
+        }
+        .name-gate-mark {
+            display: grid; place-items: center;
+            width: 44px; height: 44px; margin-bottom: 18px;
+            border-radius: 12px;
+            background: var(--water-light); color: var(--water-deep);
+            font-size: 1.25rem;
+        }
+        .name-gate-card h2 { margin: 0 0 8px; font-size: 1.28rem; color: var(--water-deep); }
+        .name-gate-card p { margin: 0 0 20px; color: var(--text-muted); font-size: .84rem; line-height: 1.55; }
+        .name-gate-card label { display: block; margin-bottom: 7px; font-size: .75rem; font-weight: 600; }
+        .name-gate-card input {
+            width: 100%; padding: 12px 13px;
+            border: 1px solid var(--border); border-radius: 9px;
+            font: 500 .9rem var(--sans); color: var(--text); outline: none;
+        }
+        .name-gate-card input:focus { border-color: var(--water); box-shadow: 0 0 0 3px rgba(15,143,168,.12); }
+        .name-gate-card button {
+            width: 100%; margin-top: 13px; padding: 12px;
+            border: 0; border-radius: 9px;
+            background: var(--water-deep); color: #fff;
+            font: 600 .86rem var(--sans); cursor: pointer;
+        }
+        .name-gate-card button:hover { background: #19566a; }
+        .name-gate-card button:disabled { opacity: .42; cursor: not-allowed; }
+        .privacy-note { margin: 12px 0 0 !important; font-size: .67rem !important; }
+        body.page-locked { overflow: hidden; }
+        body.page-locked > *:not(.name-gate) { pointer-events: none; user-select: none; }
+        .participant-badge {
+            display: none; align-items: center; gap: 7px;
+            padding: 8px 10px; border: 1px solid rgba(255,255,255,.16);
+            border-radius: 9px; color: #d9edf1;
+            font-size: .82rem; font-weight: 600; white-space: nowrap;
+        }
+        .participant-badge.visible { display: flex; }
+        .participant-badge span { max-width: 130px; overflow: hidden; text-overflow: ellipsis; }
+    </style>
+</head>
+<body>
+
+<!-- PARTICIPANT NAME GATE -->
+<div id="name-gate" class="name-gate" role="dialog" aria-modal="true" aria-labelledby="name-gate-title">
+  <div class="name-gate-card">
+    <div class="name-gate-mark" aria-hidden="true">♨</div>
+    <h2 id="name-gate-title">Enter your name to begin</h2>
+    <p>This interactive activity will unlock after you enter your name.</p>
+    <label for="name-gate-input">Your name</label>
+    <input id="name-gate-input" type="text" placeholder="First and last name" autocomplete="name" maxlength="80">
+    <button id="name-gate-btn" type="button" disabled>Open Calculator</button>
+    <p class="privacy-note">Your name, this tool’s name, and the page address will be recorded in the instructor’s activity log.</p>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div class="header">
+    <div class="header-left">
+        <h1>Indoor Pool Surface Load Calculator</h1>
+        <p class="cred"><span class="author">Developed by Dr. Nuha Aljuneidi</span> · ASHRAE-style Natatorium Estimate</p>
+    </div>
+    <div class="header-controls">
+        <div class="participant-badge" id="participant-badge" title="Current participant">● <span id="participant-name"></span></div>
+        <input type="text" id="project-name" class="header-input" placeholder="Project name…">
+        <div class="unit-toggle">
+            <button class="unit-btn active" onclick="setUnit('metric',this)">SI</button>
+            <button class="unit-btn" onclick="setUnit('imperial',this)">IP</button>
+        </div>
+    </div>
+</div>
+
+<!-- NATATORIUM CROSS-SECTION VISUALIZER -->
+<div class="visualizer">
+  <svg id="vis-svg" viewBox="0 0 1200 220" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <!-- Sky / ceiling -->
+    <rect x="0" y="0" width="1200" height="220" fill="url(#skyGrad)"/>
+    <defs>
+      <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#dbeafe"/>
+        <stop offset="100%" stop-color="#bfdbfe"/>
+      </linearGradient>
+      <linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#38bdf8"/>
+        <stop offset="100%" stop-color="#0284c7"/>
+      </linearGradient>
+      <linearGradient id="wallGrad" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#cbd5e1"/>
+        <stop offset="100%" stop-color="#94a3b8"/>
+      </linearGradient>
+    </defs>
+
+    <!-- Structural walls -->
+    <rect x="60" y="80" width="1080" height="140" fill="#cbd5e1" rx="4"/>
+
+    <!-- Pool basin -->
+    <rect x="80" y="90" width="1040" height="130" fill="url(#waterGrad)" rx="6"/>
+
+    <!-- Lane dividers -->
+    <line x1="288" y1="90" x2="288" y2="220" stroke="rgba(255,255,255,0.25)" stroke-width="2" stroke-dasharray="12,8"/>
+    <line x1="496" y1="90" x2="496" y2="220" stroke="rgba(255,255,255,0.25)" stroke-width="2" stroke-dasharray="12,8"/>
+    <line x1="704" y1="90" x2="704" y2="220" stroke="rgba(255,255,255,0.25)" stroke-width="2" stroke-dasharray="12,8"/>
+    <line x1="912" y1="90" x2="912" y2="220" stroke="rgba(255,255,255,0.25)" stroke-width="2" stroke-dasharray="12,8"/>
+
+    <!-- Water surface highlight -->
+    <rect x="80" y="90" width="1040" height="6" fill="rgba(255,255,255,0.35)" rx="3"/>
+    <!-- Animated wave shimmer -->
+    <ellipse cx="600" cy="93" rx="480" ry="4" fill="rgba(255,255,255,0.15)">
+      <animateTransform attributeName="transform" type="translate" values="0,0;30,0;0,0" dur="4s" repeatCount="indefinite"/>
+    </ellipse>
+
+    <!-- Wall tiles suggestion -->
+    <rect x="60" y="80" width="20" height="140" fill="url(#wallGrad)"/>
+    <rect x="1120" y="80" width="20" height="140" fill="url(#wallGrad)"/>
+
+    <!-- Deck / pool coping -->
+    <rect x="60" y="82" width="1080" height="10" fill="#e2e8f0" rx="2"/>
+
+    <!-- STEAM GROUP (shown/hidden by JS) -->
+    <g id="steam-group">
+      <g class="steam-puff" transform-origin="250 90">
+        <ellipse cx="250" cy="72" rx="9" ry="14" fill="rgba(186,230,253,0.55)"/>
+      </g>
+      <g class="steam-puff" transform-origin="600 90">
+        <ellipse cx="600" cy="68" rx="11" ry="18" fill="rgba(186,230,253,0.5)"/>
+      </g>
+      <g class="steam-puff" transform-origin="950 90">
+        <ellipse cx="950" cy="72" rx="9" ry="14" fill="rgba(186,230,253,0.55)"/>
+      </g>
+      <g class="steam-puff" transform-origin="400 90">
+        <ellipse cx="400" cy="60" rx="7" ry="12" fill="rgba(186,230,253,0.4)"/>
+      </g>
+      <g class="steam-puff" transform-origin="800 90">
+        <ellipse cx="800" cy="65" rx="8" ry="13" fill="rgba(186,230,253,0.45)"/>
+      </g>
+    </g>
+
+    <!-- SWIMMERS (hidden when covered) -->
+    <g id="swimmers-group">
+      <!-- Swimmer 1 -->
+      <g class="swimmer-body" transform-origin="200 108">
+        <ellipse cx="200" cy="107" rx="28" ry="9" fill="rgba(248,180,180,0.7)"/>
+        <circle cx="228" cy="103" r="9" fill="#fbcfe8"/>
+        <!-- swim cap -->
+        <ellipse cx="228" cy="100" rx="8" ry="6" fill="#3b82f6"/>
+        <!-- arm stroke suggestion -->
+        <path d="M172,105 Q185,95 200,108" stroke="rgba(248,180,180,0.8)" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <!-- Ripples -->
+        <circle cx="200" cy="109" r="8" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" class="ripple-ring"/>
+        <circle cx="200" cy="109" r="8" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1" class="ripple-ring"/>
+        <circle cx="200" cy="109" r="8" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="0.8" class="ripple-ring"/>
+      </g>
+
+      <!-- Swimmer 2 -->
+      <g class="swimmer-body" transform-origin="550 108" style="animation-delay:0.7s">
+        <ellipse cx="550" cy="107" rx="28" ry="9" fill="rgba(180,200,248,0.7)"/>
+        <circle cx="578" cy="103" r="9" fill="#bfdbfe"/>
+        <ellipse cx="578" cy="100" rx="8" ry="6" fill="#f59e0b"/>
+        <path d="M522,105 Q535,95 550,108" stroke="rgba(180,200,248,0.8)" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <circle cx="550" cy="109" r="8" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" class="ripple-ring" style="animation-delay:0.4s"/>
+        <circle cx="550" cy="109" r="8" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1" class="ripple-ring" style="animation-delay:1s"/>
+      </g>
+
+      <!-- Swimmer 3 -->
+      <g class="swimmer-body" transform-origin="900 108" style="animation-delay:1.1s">
+        <ellipse cx="900" cy="107" rx="28" ry="9" fill="rgba(180,248,200,0.7)"/>
+        <circle cx="928" cy="103" r="9" fill="#bbf7d0"/>
+        <ellipse cx="928" cy="100" rx="8" ry="6" fill="#ef4444"/>
+        <path d="M872,105 Q885,95 900,108" stroke="rgba(180,248,200,0.8)" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <circle cx="900" cy="109" r="8" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" class="ripple-ring" style="animation-delay:0.8s"/>
+        <circle cx="900" cy="109" r="8" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1" class="ripple-ring" style="animation-delay:1.4s"/>
+      </g>
+    </g>
+
+    <!-- POOL COVER (hidden by default) -->
+    <g id="cover-group" opacity="0" style="transition: opacity 0.5s;">
+      <rect x="80" y="87" width="1040" height="16" rx="4"
+        fill="url(#coverPat)"/>
+      <defs>
+        <pattern id="coverPat" x="0" y="0" width="40" height="16" patternUnits="userSpaceOnUse">
+          <rect width="40" height="16" fill="#94a3b8"/>
+          <rect x="0" y="0" width="20" height="16" fill="#cbd5e1"/>
+        </pattern>
+      </defs>
+      <text x="600" y="100" text-anchor="middle" font-family="'DM Mono',monospace" font-size="11" fill="#475569" font-weight="bold">POOL COVERED — Evaporation Reduced 85%</text>
+    </g>
+
+    <!-- Info bar at bottom of water -->
+    <rect x="80" y="195" width="1040" height="25" fill="rgba(0,0,0,0.25)" rx="0"/>
+    <text id="vis-tw-label" x="200" y="211" text-anchor="middle" font-family="'DM Mono',monospace" font-size="11" fill="rgba(255,255,255,0.9)" font-weight="500">Tw: 28°C</text>
+    <text id="vis-ta-label" x="450" y="211" text-anchor="middle" font-family="'DM Mono',monospace" font-size="11" fill="rgba(255,255,255,0.9)" font-weight="500">Ta: 30°C</text>
+    <text id="vis-rh-label" x="700" y="211" text-anchor="middle" font-family="'DM Mono',monospace" font-size="11" fill="rgba(255,255,255,0.9)" font-weight="500">RH: 50%</text>
+    <text id="vis-evap-label" x="980" y="211" text-anchor="middle" font-family="'DM Mono',monospace" font-size="11" fill="rgba(255,255,255,0.9)" font-weight="500">Evap: —</text>
+  </svg>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="main-layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <!-- Pool Parameters -->
+    <div class="input-section">
+      <div class="section-label">Pool Parameters</div>
+
+      <div class="field">
+        <label>Surface Area <span class="unit-badge unit-area">m²</span></label>
+        <input type="number" id="area" value="50" oninput="calculate()">
+      </div>
+      <div class="field">
+        <label>Water Temperature <span class="unit-badge unit-temp">°C</span></label>
+        <input type="number" id="t-water" value="28" oninput="calculate()">
+      </div>
+      <div class="field">
+        <label>Air Temperature <span class="unit-badge unit-temp">°C</span></label>
+        <input type="number" id="t-air" value="30" oninput="calculate()">
+      </div>
+      <div class="field">
+        <label>Relative Humidity <span class="unit-badge">%</span></label>
+        <div class="slider-field">
+          <input type="range" id="humidity" min="20" max="90" value="50" oninput="syncRH(this)">
+          <span class="slider-val" id="rh-display">50%</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Air Velocity Over Water <span class="unit-badge unit-speed">m/s</span></label>
+        <input type="number" id="wind" value="0.1" step="0.05" oninput="calculate()">
+      </div>
+
+      <div class="toggle-row">
+        <label class="toggle-copy" for="covered">
+          <strong>Pool Cover</strong>
+          <small>Cover reduces evaporation by 85%</small>
+        </label>
+        <div class="toggle-control">
+          <span class="toggle-state" id="cover-status">Uncovered</span>
+          <label class="toggle-switch" aria-label="Pool cover">
+            <input type="checkbox" id="covered" onchange="calculate()">
+            <div class="toggle-track"></div>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Outdoor Air Penalty -->
+    <div class="input-section">
+      <div class="oa-section-header">
+        <span>Outdoor Air Penalty</span>
+        <div class="toggle-control">
+          <span class="toggle-state" id="oa-status">Excluded</span>
+          <label class="toggle-switch" aria-label="Outdoor air penalty">
+            <input type="checkbox" id="include-oa-penalty" onchange="toggleOA()">
+            <div class="toggle-track"></div>
+          </label>
+        </div>
+      </div>
+
+      <div class="oa-fields disabled" id="oa-fields">
+        <div class="field">
+          <label>Outdoor Temperature <span class="unit-badge unit-temp">°C</span></label>
+          <input type="number" id="t-outdoor" value="35" oninput="calculate()">
+        </div>
+        <div class="field">
+          <label>Outdoor RH <span class="unit-badge">%</span></label>
+          <div class="slider-field">
+            <input type="range" id="oa-rh" min="10" max="100" value="60" oninput="syncOARH(this)">
+            <span class="slider-val" id="oa-rh-display">60%</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>OA Flow Rate <span class="unit-badge unit-flow">L/s</span></label>
+          <input type="number" id="oa-flow" value="500" oninput="calculate()">
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RESULTS PANEL -->
+  <div class="results-panel">
+
+    <!-- Primary result + mini cards -->
+    <div class="main-result">
+      <div class="result-card-primary" id="result-card">
+        <div class="result-label">Pool Surface Load</div>
+        <div class="result-value" id="result-val">0</div>
+        <div class="result-unit" id="result-unit">kW</div>
+        <div class="result-sub" id="result-sub"></div>
+      </div>
+      <div class="side-cards">
+        <div class="mini-card">
+          <div class="mini-card-label">Evaporation Rate</div>
+          <div class="mini-card-val" id="evap-display">—</div>
+          <div class="mini-card-unit" id="evap-unit">kg/hr</div>
+        </div>
+        <div class="mini-card">
+          <div class="mini-card-label">Load Status</div>
+          <div id="status-badge" class="status-badge" style="margin-top:4px">● Low Load</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pool breakdown -->
+    <div class="breakdown-section">
+      <div class="breakdown-header">Pool Surface Load Breakdown</div>
+      <div class="breakdown-row">
+        <div class="bicon" style="background:#e0f2fe">💧</div>
+        <div style="flex:1">
+          <div class="bname">Latent — Evaporation</div>
+          <div class="bbar"><div class="bbar-fill" id="bar-latent" style="width:0%"></div></div>
+        </div>
+        <div class="bval" id="val-latent">—</div>
+      </div>
+      <div class="breakdown-row">
+        <div class="bicon" style="background:#fef9c3">🌡️</div>
+        <div style="flex:1">
+          <div class="bname">Sensible — Convection</div>
+          <div class="bbar"><div class="bbar-fill" id="bar-sensible" style="width:0%;background:var(--accent)"></div></div>
+        </div>
+        <div class="bval" id="val-sensible">—</div>
+      </div>
+      <div class="breakdown-row total">
+        <div class="bicon" style="background:#f0f9ff;font-size:0.75rem;font-weight:700">Σ</div>
+        <div style="flex:1"><div class="bname">Total Pool Load</div></div>
+        <div class="bval" id="val-pool-total">—</div>
+      </div>
+    </div>
+
+    <!-- OA breakdown (shown when OA enabled) -->
+    <div class="breakdown-section" id="oa-breakdown" style="display:none">
+      <div class="breakdown-header">Outdoor Air Penalty</div>
+      <div class="breakdown-row">
+        <div class="bicon" style="background:#fef3c7">☀️</div>
+        <div style="flex:1">
+          <div class="bname">OA Sensible Penalty</div>
+          <div class="bbar"><div class="bbar-fill" id="bar-oa-sens" style="width:0%;background:var(--warn)"></div></div>
+        </div>
+        <div class="bval" id="val-oa-sens">—</div>
+      </div>
+      <div class="breakdown-row">
+        <div class="bicon" style="background:#fce7f3">💨</div>
+        <div style="flex:1">
+          <div class="bname">OA Latent Penalty</div>
+          <div class="bbar"><div class="bbar-fill" id="bar-oa-lat" style="width:0%;background:#a855f7"></div></div>
+        </div>
+        <div class="bval" id="val-oa-lat">—</div>
+      </div>
+      <div class="breakdown-row total">
+        <div class="bicon" style="background:#f0fdf4;font-size:0.75rem;font-weight:700">+OA</div>
+        <div style="flex:1"><div class="bname">Total OA Penalty</div></div>
+        <div class="bval" id="val-oa-total">—</div>
+      </div>
+      <div class="breakdown-row grand">
+        <div class="bicon" style="background:#fff7ed">⚡</div>
+        <div style="flex:1"><div class="bname">Combined Grand Total</div></div>
+        <div class="bval" id="val-grand-total">—</div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions">
+      <button class="btn btn-primary" onclick="downloadPDF()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        PDF Report
+      </button>
+      <button class="btn btn-secondary" onclick="toggleEquations(this)">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+        Show Equations
+      </button>
+    </div>
+
+    <!-- Equations box -->
+    <div class="equations-section" id="equations-box">
+      <div class="eq-title">// Core Equations — ASHRAE-style Pool Surface Load</div>
+      <div class="eq-line"><span class="fn">pws</span>(T_°F) = <span class="fn">exp</span>(<span class="num">14.43509</span> − <span class="num">8162.67</span> / (T + <span class="num">459.67</span>))  <span style="color:#475569">// sat. pressure [psia]</span></div>
+      <div class="eq-line">Evap [lb/hr] = A_ft² × (<span class="fn">pw</span> − <span class="fn">pa</span>)_inHg × (<span class="num">0.1</span> + <span class="num">0.015</span> × V_fpm)</div>
+      <div class="eq-line">Q_latent [BTU/hr] = Evap × <span class="num">1050</span></div>
+      <div class="eq-line">h_conv = <span class="num">0.22</span> + <span class="num">0.15</span> × √V_fpm</div>
+      <div class="eq-line">Q_sensible [BTU/hr] = h_conv × A_ft² × <span class="fn">max</span>(<span class="num">0</span>, T_w − T_a)</div>
+      <div class="eq-title" style="margin-top:12px">// Outdoor Air Penalty</div>
+      <div class="eq-line">w = <span class="num">0.62198</span> × p_v / (<span class="num">14.696</span> − p_v)  <span style="color:#475569">// humidity ratio [lb/lb]</span></div>
+      <div class="eq-line">Q_OA,s = <span class="num">1.08</span> × CFM × <span class="fn">max</span>(<span class="num">0</span>, T_out − T_in)</div>
+      <div class="eq-line">Q_OA,l = <span class="num">4840</span> × CFM × <span class="fn">max</span>(<span class="num">0</span>, w_out − w_in)</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  let unitSystem = 'metric';
+
+  // ——— PARTICIPANT ACTIVITY LOG ———
+  const SHEET_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw_FJpAiEAwYRn3JkBXmSanLxjtrrZoaaXgseYQzAywXlGzXle7zkLelttjWUv66HqZ/exec';
+
+  function logParticipantName(name) {
+    const data = new URLSearchParams();
+    data.append('name', name);
+    data.append('tool', 'Indoor Pool Surface Load Calculator');
+    data.append('page', window.location.href);
+    fetch(SHEET_WEBAPP_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: data.toString()
+    }).catch(() => {});
+  }
+
+  function unlockForParticipant(name) {
+    document.body.classList.remove('page-locked');
+    document.getElementById('name-gate').style.display = 'none';
+    document.getElementById('participant-name').textContent = name;
+    document.getElementById('participant-badge').classList.add('visible');
+    logParticipantName(name);
+  }
+
+  function initializeNameGate() {
+    const gate = document.getElementById('name-gate');
+    const input = document.getElementById('name-gate-input');
+    const button = document.getElementById('name-gate-btn');
+    document.body.classList.add('page-locked');
+    gate.style.display = 'flex';
+    input.value = '';
+    button.disabled = true;
+    const refreshButton = () => { button.disabled = input.value.trim().length < 2; };
+    input.addEventListener('input', refreshButton);
+    button.addEventListener('click', () => {
+      const name = input.value.trim();
+      if (name.length < 2) return;
+      unlockForParticipant(name);
+    });
+    input.addEventListener('keydown', event => {
+      if (event.key === 'Enter' && !button.disabled) button.click();
+    });
+    setTimeout(() => input.focus(), 50);
+  }
+
+  // ——— UNIT TOGGLE ———
+  function setUnit(sys, btn) {
+    if (sys === unitSystem) return;
+    document.querySelectorAll('.unit-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const ids = ['area','t-water','t-air','t-outdoor'];
+    const aEl = document.getElementById('area');
+    const twEl = document.getElementById('t-water');
+    const taEl = document.getElementById('t-air');
+    const toEl = document.getElementById('t-outdoor');
+    const wEl = document.getElementById('wind');
+    const fEl = document.getElementById('oa-flow');
+
+    if (sys === 'metric') {
+      aEl.value  = (parseFloat(aEl.value) / 10.764).toFixed(1);
+      twEl.value = ((parseFloat(twEl.value) - 32) * 5/9).toFixed(1);
+      taEl.value = ((parseFloat(taEl.value) - 32) * 5/9).toFixed(1);
+      toEl.value = ((parseFloat(toEl.value) - 32) * 5/9).toFixed(1);
+      wEl.value  = (parseFloat(wEl.value) / 196.85).toFixed(3);
+      fEl.value  = (parseFloat(fEl.value) / 2.11888).toFixed(0);
+    } else {
+      aEl.value  = (parseFloat(aEl.value) * 10.764).toFixed(0);
+      twEl.value = (parseFloat(twEl.value) * 9/5 + 32).toFixed(1);
+      taEl.value = (parseFloat(taEl.value) * 9/5 + 32).toFixed(1);
+      toEl.value = (parseFloat(toEl.value) * 9/5 + 32).toFixed(1);
+      wEl.value  = (parseFloat(wEl.value) * 196.85).toFixed(0);
+      fEl.value  = (parseFloat(fEl.value) * 2.11888).toFixed(0);
+    }
+
+    unitSystem = sys;
+    document.querySelectorAll('.unit-area').forEach(el => el.textContent = unitSystem === 'metric' ? 'm²' : 'ft²');
+    document.querySelectorAll('.unit-temp').forEach(el => el.textContent = unitSystem === 'metric' ? '°C' : '°F');
+    document.querySelectorAll('.unit-speed').forEach(el => el.textContent = unitSystem === 'metric' ? 'm/s' : 'fpm');
+    document.querySelectorAll('.unit-flow').forEach(el => el.textContent = unitSystem === 'metric' ? 'L/s' : 'CFM');
+    calculate();
+  }
+
+  function syncRH(el) { document.getElementById('rh-display').textContent = el.value + '%'; calculate(); }
+  function syncOARH(el) { document.getElementById('oa-rh-display').textContent = el.value + '%'; calculate(); }
+
+  // ——— OA TOGGLE — fixed: just toggle class, no pointer-events override needed ———
+  function toggleOA() {
+    const active = document.getElementById('include-oa-penalty').checked;
+    const fields = document.getElementById('oa-fields');
+    const breakdown = document.getElementById('oa-breakdown');
+    const status = document.getElementById('oa-status');
+    fields.classList.toggle('disabled', !active);
+    breakdown.style.display = active ? 'block' : 'none';
+    status.textContent = active ? 'Included' : 'Excluded';
+    status.classList.toggle('on', active);
+    calculate();
+  }
+
+  function toggleEquations(btn) {
+    const box = document.getElementById('equations-box');
+    box.classList.toggle('open');
+    btn.innerHTML = box.classList.contains('open')
+      ? '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg> Hide Equations'
+      : '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg> Show Equations';
+  }
+
+  // ——— PHYSICS ———
+  function satPressurePsia(tF) { return Math.exp(14.43509 - 8162.67 / (tF + 459.67)); }
+  function psiaToInHg(p) { return p / 0.491154; }
+  function clamp(v, lo, hi) { return Math.min(Math.max(v, lo), hi); }
+
+  function getResults() {
+    let area = Math.max(0, parseFloat(document.getElementById('area').value) || 0);
+    let tW   = parseFloat(document.getElementById('t-water').value) || 0;
+    let tA   = parseFloat(document.getElementById('t-air').value) || 0;
+    let rh   = clamp(parseFloat(document.getElementById('humidity').value) || 0, 0, 100) / 100;
+    let wind = Math.max(0, parseFloat(document.getElementById('wind').value) || 0);
+    let isCovered  = document.getElementById('covered').checked;
+    let includeOA  = document.getElementById('include-oa-penalty').checked;
+    let tOut  = parseFloat(document.getElementById('t-outdoor').value) || 0;
+    let oaRH  = clamp(parseFloat(document.getElementById('oa-rh').value) || 0, 0, 100) / 100;
+    let oaFlow = Math.max(0, parseFloat(document.getElementById('oa-flow').value) || 0);
+
+    // Convert to IP
+    let cA, cTw, cTa, cTo, cV, cF;
+    if (unitSystem === 'metric') {
+      cA  = area * 10.764;
+      cTw = tW * 9/5 + 32;
+      cTa = tA * 9/5 + 32;
+      cTo = tOut * 9/5 + 32;
+      cV  = wind * 196.85;
+      cF  = oaFlow * 2.11888;
+    } else {
+      cA = area; cTw = tW; cTa = tA; cTo = tOut; cV = wind; cF = oaFlow;
+    }
+
+    const pwsW   = satPressurePsia(cTw);
+    const pwsA   = satPressurePsia(cTa);
+    const pwInHg = psiaToInHg(pwsW);
+    const paInHg = psiaToInHg(rh * pwsA);
+
+    let evap = cA * Math.max(0, pwInHg - paInHg) * (0.1 + 0.015 * cV);
+    if (isCovered) evap *= 0.15;
+
+    const qLat  = evap * 1050;
+    const hConv = 0.22 + 0.15 * Math.sqrt(Math.max(0, cV));
+    // Only count heat transferred from the warmer pool to the room.
+    // Using Math.abs() incorrectly added a pool heating load when Ta > Tw.
+    const qSens = hConv * cA * Math.max(0, cTw - cTa);
+    const qPool = qLat + qSens;
+
+    let qOASens = 0, qOALat = 0;
+    if (includeOA) {
+      const pwsO = satPressurePsia(cTo);
+      const pO   = oaRH * pwsO;
+      const pI   = rh * pwsA;
+      const wO   = 0.62198 * pO / Math.max(0.0001, 14.696 - pO);
+      const wI   = 0.62198 * pI / Math.max(0.0001, 14.696 - pI);
+      qOASens = 1.08 * cF * Math.max(0, cTo - cTa);
+      qOALat  = 4840  * cF * Math.max(0, wO - wI);
+    }
+
+    const qOA    = qOASens + qOALat;
+    const qGrand = qPool + qOA;
+
+    return { area, tW, tA, rh, wind, isCovered, includeOA, tOut, oaRH, oaFlow,
+             evap, qLat, qSens, qPool, qOASens, qOALat, qOA, qGrand };
+  }
+
+  // ——— FORMATTING ———
+  function fLoad(btu) {
+    return unitSystem === 'metric'
+      ? `${(btu / 3412.14).toFixed(2)} kW`
+      : `${Math.round(btu).toLocaleString()} BTU/hr`;
+  }
+  function fEvap(lbhr) {
+    return unitSystem === 'metric'
+      ? { v: (lbhr * 0.453592).toFixed(2), u: 'kg/hr' }
+      : { v: lbhr.toFixed(2), u: 'lb/hr' };
+  }
+  function fTemp(v) { return unitSystem === 'metric' ? `${v.toFixed(1)}°C` : `${v.toFixed(1)}°F`; }
+  function fArea(v) { return unitSystem === 'metric' ? `${v.toFixed(2)} m²` : `${v.toFixed(2)} ft²`; }
+  function fSpeed(v) { return unitSystem === 'metric' ? `${v.toFixed(3)} m/s` : `${v.toFixed(0)} fpm`; }
+  function fFlow(v) { return unitSystem === 'metric' ? `${v.toFixed(0)} L/s` : `${v.toFixed(0)} CFM`; }
+
+  // ——— UPDATE UI ———
+  function updateUI(d) {
+    const coverStatus = document.getElementById('cover-status');
+    coverStatus.textContent = d.isCovered ? 'Covered' : 'Uncovered';
+    coverStatus.classList.toggle('on', d.isCovered);
+
+    const kW = d.qPool / 3412.14;
+    const card = document.getElementById('result-card');
+    card.className = 'result-card-primary' + (kW > 15 ? ' danger' : kW > 5 ? ' warn' : '');
+
+    document.getElementById('result-val').textContent = unitSystem === 'metric'
+      ? kW.toFixed(2) : Math.round(d.qPool).toLocaleString();
+    document.getElementById('result-unit').textContent = unitSystem === 'metric' ? 'kW' : 'BTU/hr';
+    document.getElementById('result-sub').textContent = unitSystem === 'metric'
+      ? `${Math.round(d.qPool).toLocaleString()} BTU/hr` : '';
+
+    const ev = fEvap(d.evap);
+    document.getElementById('evap-display').textContent = ev.v;
+    document.getElementById('evap-unit').textContent = ev.u;
+
+    const badge = document.getElementById('status-badge');
+    if (kW > 15)     { badge.className = 'status-badge danger'; badge.textContent = '● High Load'; }
+    else if (kW > 5) { badge.className = 'status-badge warn';   badge.textContent = '● Moderate Load'; }
+    else             { badge.className = 'status-badge';         badge.textContent = '● Low Load'; }
+
+    const tot = d.qPool || 1;
+    document.getElementById('val-latent').textContent = fLoad(d.qLat);
+    document.getElementById('val-sensible').textContent = fLoad(d.qSens);
+    document.getElementById('val-pool-total').textContent = fLoad(d.qPool);
+    document.getElementById('bar-latent').style.width   = Math.round(d.qLat  / tot * 100) + '%';
+    document.getElementById('bar-sensible').style.width = Math.round(d.qSens / tot * 100) + '%';
+
+    if (d.includeOA) {
+      const ot = d.qOA || 1;
+      document.getElementById('val-oa-sens').textContent  = fLoad(d.qOASens);
+      document.getElementById('val-oa-lat').textContent   = fLoad(d.qOALat);
+      document.getElementById('val-oa-total').textContent = fLoad(d.qOA);
+      document.getElementById('val-grand-total').textContent = fLoad(d.qGrand);
+      document.getElementById('bar-oa-sens').style.width = Math.round(d.qOASens / ot * 100) + '%';
+      document.getElementById('bar-oa-lat').style.width  = Math.round(d.qOALat  / ot * 100) + '%';
+    }
+
+    // Visualizer labels
+    document.getElementById('vis-tw-label').textContent  = `Tw: ${fTemp(d.tW)}`;
+    document.getElementById('vis-ta-label').textContent  = `Ta: ${fTemp(d.tA)}`;
+    document.getElementById('vis-rh-label').textContent  = `RH: ${Math.round(d.rh * 100)}%`;
+    document.getElementById('vis-evap-label').textContent = `Evap: ${fEvap(d.evap).v} ${fEvap(d.evap).u}`;
+
+    // Steam visibility
+    const tWC = unitSystem === 'metric' ? d.tW : (d.tW - 32) * 5/9;
+    const tAC = unitSystem === 'metric' ? d.tA : (d.tA - 32) * 5/9;
+    const showSteam = (tWC - tAC) > 2 && !d.isCovered;
+    document.getElementById('steam-group').style.display = showSteam ? '' : 'none';
+
+    // Pool cover + swimmers
+    const cover = document.getElementById('cover-group');
+    const swimmers = document.getElementById('swimmers-group');
+    cover.style.opacity = d.isCovered ? '1' : '0';
+    cover.style.pointerEvents = 'none';
+    swimmers.style.opacity = d.isCovered ? '0' : '1';
+    swimmers.style.transition = 'opacity 0.5s';
+  }
+
+  function calculate() {
+    const d = getResults();
+    updateUI(d);
+  }
+
+  // ——— PDF ———
+  async function downloadPDF() {
+    if (!window.jspdf?.jsPDF) {
+      alert('The PDF library could not be loaded. Check your internet connection and try again.');
+      return;
+    }
+    const { jsPDF } = window.jspdf;
+    const proj = document.getElementById('project-name')?.value.trim() || 'Untitled';
+    const d = getResults();
+
+    const doc = new jsPDF('p', 'mm', 'letter');
+    const L = 16, R = 200;
+    let y = 20;
+
+    const ensureSpace = (n) => { if (y + n > 270) { doc.addPage(); y = 20; } };
+
+    const sectionTitle = (t) => {
+      ensureSpace(14);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(11);
+      doc.setTextColor(3, 105, 161); doc.text(t, L, y); y += 3;
+      doc.setDrawColor(186, 230, 253); doc.line(L, y, R, y); y += 7;
+    };
+
+    const row = (label, value, note = '') => {
+      ensureSpace(8);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(50, 50, 50);
+      doc.text(label, L, y);
+      doc.setFont('helvetica', 'normal'); doc.text(String(value), L + 72, y);
+      if (note) {
+        doc.setFontSize(8); doc.setTextColor(100, 116, 139);
+        doc.text(doc.splitTextToSize(note, 58), L + 132, y);
+      }
+      y += 6;
+    };
+
+    // Header
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(16); doc.setTextColor(3, 56, 100);
+    doc.text('Indoor Pool Surface Load Report', L, y); y += 7;
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(100, 116, 139);
+    doc.text(`Developed by Dr. Nuha Aljuneidi`, L, y); y += 5;
+    doc.text(`Generated: ${new Date().toLocaleDateString()}   |   Project: ${proj}`, L, y); y += 12;
+
+    sectionTitle('Input Parameters');
+    row('Pool Surface Area', fArea(d.area));
+    row('Water Temperature', fTemp(d.tW));
+    row('Air Temperature', fTemp(d.tA));
+    row('Indoor RH', `${Math.round(d.rh * 100)} %`);
+    row('Air Velocity', fSpeed(d.wind));
+    row('Pool Covered', d.isCovered ? 'Yes — evaporation ×0.15' : 'No');
+
+    sectionTitle('Pool Surface Load Results');
+    row('Evaporation Rate', fEvap(d.evap).v + ' ' + fEvap(d.evap).u, 'Moisture from pool surface');
+    row('Latent Load', fLoad(d.qLat), 'Primary air-side load');
+    row('Sensible Convection', fLoad(d.qSens), 'Active when Tw > Ta');
+    row('TOTAL POOL LOAD', fLoad(d.qPool));
+
+    sectionTitle('Outdoor Air Penalty');
+    if (!d.includeOA) {
+      row('Status', 'Not included');
+    } else {
+      row('Outdoor Temperature', fTemp(d.tOut));
+      row('Outdoor RH', `${Math.round(d.oaRH * 100)} %`);
+      row('OA Flow Rate', fFlow(d.oaFlow));
+      row('OA Sensible Penalty', fLoad(d.qOASens));
+      row('OA Latent Penalty', fLoad(d.qOALat));
+      row('Total OA Penalty', fLoad(d.qOA), 'Ventilation conditioning load');
+      row('COMBINED GRAND TOTAL', fLoad(d.qGrand));
+    }
+
+    sectionTitle('Engineering Notes');
+    const notes = [
+      'This calculator provides an ASHRAE-style engineering estimate for indoor pool natatorium surface loads.',
+      'Latent (evaporative) load is typically the dominant term. Verify against dehumidification unit sizing.',
+      'The outdoor-air penalty is reported separately; add only if not already captured in the primary HVAC load model.',
+      'Cross-check with project ventilation strategy, dehumidification sequencing, and applicable natatorium design standards prior to final design.'
+    ];
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(71, 85, 105);
+    notes.forEach(n => {
+      const lines = doc.splitTextToSize(`• ${n}`, 176);
+      ensureSpace(lines.length * 4 + 2);
+      doc.text(lines, L, y);
+      y += lines.length * 4 + 3;
+    });
+
+    doc.save(`${proj.replace(/[^\w\-]+/g,'_')}_pool_load_report.pdf`);
+  }
+
+  // Init
+  initializeNameGate();
+  calculate();
+</script>
+</body>
+</html>
