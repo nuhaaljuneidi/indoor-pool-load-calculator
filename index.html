@@ -346,9 +346,74 @@
             .results-panel { padding: 20px 16px 28px; }
             .actions { flex-direction: column; }
         }
+
+        /* Participant name gate + activity logging */
+        .name-gate {
+            position: fixed; inset: 0; z-index: 9999;
+            display: flex; align-items: center; justify-content: center;
+            padding: 22px;
+            background: rgba(10, 35, 44, .76);
+            backdrop-filter: blur(9px);
+        }
+        .name-gate-card {
+            width: min(440px, 100%);
+            padding: 30px;
+            border: 1px solid rgba(255,255,255,.3);
+            border-radius: 18px;
+            background: #fff;
+            box-shadow: 0 24px 70px rgba(7, 27, 34, .32);
+        }
+        .name-gate-mark {
+            display: grid; place-items: center;
+            width: 44px; height: 44px; margin-bottom: 18px;
+            border-radius: 12px;
+            background: var(--water-light); color: var(--water-deep);
+            font-size: 1.25rem;
+        }
+        .name-gate-card h2 { margin: 0 0 8px; font-size: 1.28rem; color: var(--water-deep); }
+        .name-gate-card p { margin: 0 0 20px; color: var(--text-muted); font-size: .84rem; line-height: 1.55; }
+        .name-gate-card label { display: block; margin-bottom: 7px; font-size: .75rem; font-weight: 600; }
+        .name-gate-card input {
+            width: 100%; padding: 12px 13px;
+            border: 1px solid var(--border); border-radius: 9px;
+            font: 500 .9rem var(--sans); color: var(--text); outline: none;
+        }
+        .name-gate-card input:focus { border-color: var(--water); box-shadow: 0 0 0 3px rgba(15,143,168,.12); }
+        .name-gate-card button {
+            width: 100%; margin-top: 13px; padding: 12px;
+            border: 0; border-radius: 9px;
+            background: var(--water-deep); color: #fff;
+            font: 600 .86rem var(--sans); cursor: pointer;
+        }
+        .name-gate-card button:hover { background: #19566a; }
+        .name-gate-card button:disabled { opacity: .42; cursor: not-allowed; }
+        .privacy-note { margin: 12px 0 0 !important; font-size: .67rem !important; }
+        body.page-locked { overflow: hidden; }
+        body.page-locked > *:not(.name-gate) { pointer-events: none; user-select: none; }
+        .participant-badge {
+            display: none; align-items: center; gap: 7px;
+            padding: 8px 10px; border: 1px solid rgba(255,255,255,.16);
+            border-radius: 9px; color: #d9edf1;
+            font-size: .7rem; white-space: nowrap;
+        }
+        .participant-badge.visible { display: flex; }
+        .participant-badge span { max-width: 130px; overflow: hidden; text-overflow: ellipsis; }
     </style>
 </head>
 <body>
+
+<!-- PARTICIPANT NAME GATE -->
+<div id="name-gate" class="name-gate" role="dialog" aria-modal="true" aria-labelledby="name-gate-title">
+  <div class="name-gate-card">
+    <div class="name-gate-mark" aria-hidden="true">♨</div>
+    <h2 id="name-gate-title">Enter your name to begin</h2>
+    <p>This interactive activity will unlock after you enter your name.</p>
+    <label for="name-gate-input">Your name</label>
+    <input id="name-gate-input" type="text" placeholder="First and last name" autocomplete="name" maxlength="80">
+    <button id="name-gate-btn" type="button" disabled>Open Calculator</button>
+    <p class="privacy-note">Your name, this tool’s name, and the page address will be recorded in the instructor’s activity log.</p>
+  </div>
+</div>
 
 <!-- HEADER -->
 <div class="header">
@@ -357,6 +422,7 @@
         <p class="cred">Dr. Nuha Aljuneidi · Dept. of Civil &amp; Architectural Engineering · Lawrence Technological University · ASHRAE-style Natatorium Estimate</p>
     </div>
     <div class="header-controls">
+        <div class="participant-badge" id="participant-badge" title="Current participant">● <span id="participant-name"></span></div>
         <input type="text" id="project-name" class="header-input" placeholder="Project name…">
         <div class="unit-toggle">
             <button class="unit-btn active" onclick="setUnit('metric',this)">SI</button>
@@ -685,6 +751,51 @@
 <script>
   let unitSystem = 'metric';
 
+  // ——— PARTICIPANT ACTIVITY LOG ———
+  const SHEET_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw_FJpAiEAwYRn3JkBXmSanLxjtrrZoaaXgseYQzAywXlGzXle7zkLelttjWUv66HqZ/exec';
+
+  function logParticipantName(name) {
+    const data = new URLSearchParams();
+    data.append('name', name);
+    data.append('tool', 'Indoor Pool Surface Load Calculator');
+    data.append('page', window.location.href);
+    fetch(SHEET_WEBAPP_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: data.toString()
+    }).catch(() => {});
+  }
+
+  function unlockForParticipant(name) {
+    document.body.classList.remove('page-locked');
+    document.getElementById('name-gate').style.display = 'none';
+    document.getElementById('participant-name').textContent = name;
+    document.getElementById('participant-badge').classList.add('visible');
+    logParticipantName(name);
+  }
+
+  function initializeNameGate() {
+    const gate = document.getElementById('name-gate');
+    const input = document.getElementById('name-gate-input');
+    const button = document.getElementById('name-gate-btn');
+    document.body.classList.add('page-locked');
+    gate.style.display = 'flex';
+    input.value = '';
+    button.disabled = true;
+    const refreshButton = () => { button.disabled = input.value.trim().length < 2; };
+    input.addEventListener('input', refreshButton);
+    button.addEventListener('click', () => {
+      const name = input.value.trim();
+      if (name.length < 2) return;
+      unlockForParticipant(name);
+    });
+    input.addEventListener('keydown', event => {
+      if (event.key === 'Enter' && !button.disabled) button.click();
+    });
+    setTimeout(() => input.focus(), 50);
+  }
+
   // ——— UNIT TOGGLE ———
   function setUnit(sys, btn) {
     if (sys === unitSystem) return;
@@ -982,6 +1093,7 @@
   }
 
   // Init
+  initializeNameGate();
   calculate();
 </script>
 </body>
