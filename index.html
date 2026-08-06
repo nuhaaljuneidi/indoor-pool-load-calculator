@@ -6,7 +6,7 @@
     <title>Indoor Pool Surface Load Calculator</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root {
@@ -203,6 +203,143 @@
         }
         input[type=number]::-webkit-inner-spin-button,
         input[type=number]::-webkit-outer-spin-button { opacity: 0.5; }
+
+        /* 2026 visual refresh — clean SBED engineering workspace */
+        :root {
+            --water: #0f8fa8;
+            --water-deep: #123b4a;
+            --water-light: #e8f5f7;
+            --teal: #17a398;
+            --bg: #f4f7f8;
+            --surface: #ffffff;
+            --border: #d9e4e7;
+            --text: #16313b;
+            --text-muted: #667b84;
+            --accent: #e07a3f;
+            --danger: #c94b4b;
+            --warn: #d38a2d;
+            --mono: 'JetBrains Mono', monospace;
+            --sans: 'Inter', sans-serif;
+        }
+
+        body {
+            background:
+                radial-gradient(circle at 100% 0%, rgba(15,143,168,.08), transparent 32rem),
+                var(--bg);
+            letter-spacing: -0.01em;
+        }
+
+        .header {
+            padding: 18px clamp(18px, 4vw, 48px);
+            background: rgba(18,59,74,.98);
+            border-bottom: 1px solid rgba(255,255,255,.12);
+            box-shadow: 0 8px 30px rgba(18,59,74,.14);
+        }
+        .header-left h1 {
+            font-size: clamp(1.05rem, 2vw, 1.35rem);
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            text-transform: none;
+        }
+        .header-left .cred {
+            margin-top: 5px;
+            font-family: var(--sans);
+            font-size: .72rem;
+            line-height: 1.35;
+            color: #b8d8df;
+        }
+        .header-input {
+            width: 210px;
+            padding: 9px 12px;
+            border-radius: 9px;
+            font-family: var(--sans);
+            background: rgba(255,255,255,.08);
+        }
+        .unit-toggle { border-radius: 9px; }
+        .unit-btn { padding: 9px 16px; font-family: var(--sans); font-weight: 600; }
+
+        .visualizer {
+            height: 132px;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(180deg, #e6f2f4 0%, #cae4e9 100%);
+        }
+        .visualizer svg { height: 132px; }
+
+        .main-layout {
+            grid-template-columns: minmax(290px, 340px) minmax(0, 1fr);
+            min-height: calc(100vh - 207px);
+            max-width: 1440px;
+            margin: 0 auto;
+            background: var(--surface);
+            box-shadow: 0 12px 44px rgba(22,49,59,.08);
+        }
+        .sidebar {
+            padding: 24px;
+            border-right: 1px solid var(--border);
+            background: #fbfcfc;
+        }
+        .input-section { margin-bottom: 26px; }
+        .section-label, .oa-section-header {
+            font-size: .69rem;
+            letter-spacing: .09em;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 9px;
+            margin-bottom: 15px;
+        }
+        .field { margin-bottom: 16px; }
+        .field label {
+            font-family: var(--sans);
+            font-size: .77rem;
+            font-weight: 600;
+        }
+        .field input[type="number"] {
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            background: #fff;
+            font-size: .82rem;
+        }
+        .unit-badge { border-radius: 5px; padding: 2px 6px; }
+        .toggle-row { border: 1px solid #d4eaed; background: #f0f8f9; }
+
+        .results-panel { padding: 26px clamp(20px, 3vw, 38px); background: var(--bg); }
+        .result-card-primary {
+            padding: 23px 25px;
+            border-radius: 14px;
+            background: linear-gradient(145deg, #123b4a 0%, #17677a 100%);
+            box-shadow: 0 10px 26px rgba(18,59,74,.16);
+        }
+        .result-value { font-size: clamp(2.2rem, 5vw, 3.15rem); }
+        .mini-card, .breakdown-section {
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 16px rgba(22,49,59,.045);
+        }
+        .mini-card { padding: 15px 17px; }
+        .mini-card-val { color: var(--water-deep); }
+        .breakdown-header { padding: 11px 16px; background: #edf6f7; }
+        .breakdown-row { padding: 12px 16px; border-top-color: #e7eef0; }
+        .bname { font-family: var(--sans); font-size: .76rem; }
+        .bval { font-size: .75rem; }
+        .bicon { background: #edf6f7 !important; }
+        .btn { font-family: var(--sans); font-weight: 600; padding: 12px 18px; }
+        .btn-primary { background: var(--water-deep); }
+        .btn-primary:hover { background: #19566a; }
+        .equations-section { background: #162d36; }
+
+        @media (max-width: 900px) {
+            .header { align-items: flex-start; }
+            .main-layout { grid-template-columns: 300px minmax(0,1fr); }
+            .main-result { flex-direction: column; }
+        }
+        @media (max-width: 720px) {
+            .header { flex-direction: column; gap: 14px; }
+            .header-controls { width: 100%; }
+            .header-input { flex: 1; width: auto; }
+            .visualizer, .visualizer svg { height: 104px; }
+            .main-layout { grid-template-columns: 1fr; }
+            .sidebar { position: static; border-right: 0; border-bottom: 1px solid var(--border); }
+            .results-panel { padding: 20px 16px 28px; }
+            .actions { flex-direction: column; }
+        }
     </style>
 </head>
 <body>
