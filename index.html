@@ -256,7 +256,7 @@
             line-height: 1.35;
             color: #b8d8df;
         }
-        .header-left .cred .author { color: #fff; font-weight: 600; }
+        .header-left .cred .author { color: #fff; font-weight: 700; font-size: 1.05em; }
         .header-input {
             width: 210px;
             padding: 9px 12px;
@@ -428,7 +428,7 @@
 <div class="header">
     <div class="header-left">
         <h1>Indoor Pool Surface Load Calculator</h1>
-        <p class="cred"><span class="author">Developed by Dr. Nuha Aljuneidi</span> · ASHRAE-style Natatorium Estimate</p>
+        <p class="cred"><span class="author">Developed by Dr. Nuha AlJuneidi</span> · ASHRAE-style Natatorium Estimate</p>
     </div>
     <div class="header-controls">
         <div class="participant-badge" id="participant-badge" title="Current participant">● <span id="participant-name"></span></div>
@@ -1053,7 +1053,7 @@
     doc.setFont('helvetica', 'bold'); doc.setFontSize(16); doc.setTextColor(3, 56, 100);
     doc.text('Indoor Pool Surface Load Report', L, y); y += 7;
     doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(100, 116, 139);
-    doc.text(`Developed by Dr. Nuha Aljuneidi`, L, y); y += 5;
+    doc.text(`Developed by Dr. Nuha AlJuneidi`, L, y); y += 5;
     doc.text(`Generated: ${new Date().toLocaleDateString()}   |   Project: ${proj}`, L, y); y += 12;
 
     sectionTitle('Input Parameters');
